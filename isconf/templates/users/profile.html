@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %} {{ user.username }} - Профиль{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="user_info">
+            <p>Добро пожаловать, {{ user.username }}, Ваш текущий статус:
+                {{ user.userprofile.get_status_display }}</p>
+            <form method="POST" action="{% url 'profile' %}">
+                {%  csrf_token %}
+
+                <p>Имя:</p>
+                {{ user_form.first_name }}
+                <p>Фамилия:</p>
+                {{ user_form.last_name }}
+                <p>E-Mail:</p>
+                {{ user_form.email }}
+                <p>Местоположение:</p>
+                {{ userprofile_form.location }}
+                <p>Дата рождения:</p>
+                {{ userprofile_form.birth_date }}
+
+                <p><input type="submit" value="Сохранить"></p>
+            </form>
+        </div>
+        <div class="controls">
+
+        </div>
+    </div>
+{% endblock %}

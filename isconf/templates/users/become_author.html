@@ -1,0 +1,14 @@
+{%  extends 'base.html' %}
+
+{% block title %}Стать автором{% endblock %}
+
+{% block content %}
+    <p>{{ user.first_name }}, станьте автором! Для этого заполните форму ниже</p>
+
+    <form method="POST" action="{% url 'become_author' %}">
+        {% csrf_token %}
+    
+        {{ form.as_p }}
+        <input type="submit">
+    </form>
+{% endblock %}

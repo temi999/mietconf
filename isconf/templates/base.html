@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title  %}Base{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'navbar.css' %}">
+</head>
+<body>
+    {% block navbar %}
+    <nav>
+        <ul>
+            <li><a href="{% url 'home' %}">Главная</a></li>
+            <li><a href="{% url 'login' %}">Войти</a></li>
+            <li><a href="{% url 'register' %}">Зарегистрироваться</a></li>
+            <li>
+                <a href="#">Профиль</a>
+                <ul>
+                    <li><a href="{% url 'profile' %}">Профиль</a></li>
+                    <li><a href="{% url 'logout' %}">Выйти</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    {% endblock %}
+    {% block content %} {% endblock %}
+</body>
+</html>
