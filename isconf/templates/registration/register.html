@@ -1,20 +1,17 @@
-{%  extends 'base.html' %}
+{%  extends 'form.html' %}
 
 {%  block title %}Регистрация{% endblock %}
 
-
-{%  block content %}
-    <form method="post" action="{% url 'register' %}">
-    {% csrf_token %}
-
-    {% if form.errors %}
-    <p>Проверьте данные и введите снова</p>
-    {% endif %}
-
-    <p>Имя пользователя: {{ form.username }}</p>
-    <p>Пароль: {{ form.password1 }}</p>
-    <p>Подтвердите пароль: {{ form.password2 }}</p>
-
-    <input type="submit" value="Зарегистрироваться">
+{% block form %}
+    <h2 class="title">Регистрация</h2>
+    <form method="POST" action="{% url 'register' %}">
+        {%  csrf_token %}
+        <p>Имя пользователя</p>
+        <p>{{ form.username }}</p>
+        <p>Пароль</p>
+        <p>{{ form.password1 }}</p>
+        <p>Подтверждение</p>
+        <p>{{ form.password2 }}</p>
+        <p><input type="submit" value="Зарегистрироваться"></p>
     </form>
 {% endblock %}

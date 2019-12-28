@@ -4,26 +4,58 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title  %}Base{% endblock %}</title>
+    <style>
+        body {
+            background-image: url({% static 'site-background.jpg' %});
+        }
+    </style>
     <link rel="stylesheet" href="{% static 'navbar.css' %}">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    {% block css %}{% endblock %}
 </head>
 <body>
-    {% block navbar %}
+    <header class="header">
+        {% block header %}{% endblock %}
+    </header>
+
     <nav>
+    {% block navbar %}
         <ul>
             <li><a href="{% url 'home' %}">Главная</a></li>
-            <li><a href="{% url 'login' %}">Войти</a></li>
-            <li><a href="{% url 'register' %}">Зарегистрироваться</a></li>
+            <li>
+                <a href="#">Статьи</a>
+                <ul>
+                    {% if section_list %}
+                        {% for section in section_list %}
+                            {% if section.name != 'Нет секции' %}
+                                <li><a href="">{{ section.name }}</a></li>
+                            {% else %}
+                                <li><a href="">Все секции</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if user.userprofile.status not in 'participant approving author' %}
+                        <li><a href="">Ожидают проверки</a></li>
+                    {% endif %}
+                </ul>
+            </li>
             <li>
                 <a href="#">Профиль</a>
                 <ul>
+                    {% if user.is_authenticated %}
                     <li><a href="{% url 'profile' %}">Профиль</a></li>
                     <li><a href="{% url 'logout' %}">Выйти</a></li>
+                    {% else  %}
+                        <li><a href="{% url 'login' %}">Войти</a></li>
+                        <li><a href="{% url 'register' %}">Зарегистрироваться</a></li>
+                    {% endif %}
                 </ul>
             </li>
         </ul>
+    {% endblock %}
     </nav>
 
-    {% endblock %}
     {% block content %} {% endblock %}
 </body>
 </html>

@@ -1,13 +1,16 @@
-{%  extends 'base.html' %}
+{%  extends 'form.html' %}
 
-{%  block title %}Войти{% endblock %}
+{%  block title %}Вход в аккаунт{% endblock %}
 
-{% block content %}
+{% block form %}
+    <h2 class="title">Вход в аккаунт</h2>
     <form method="POST" action="{% url 'login' %}">
         {%  csrf_token %}
-        {{ form.username }}
-        {{ form.password }}
-        <input type="submit" value="login">
-        <input type="hidden" name="next" value="{{  next }}">
+        <p>Имя пользователя</p>
+        <p>{{ form.username }}</p>
+        <p>Пароль</p>
+        <p>{{ form.password }}</p>
+        <p><input type="submit" value="Войти"></p>
+        <input type="hidden" name="next" value="{{ next }}">
     </form>
 {% endblock %}

@@ -3,8 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-from main_app import models
-from .models import UserProfile
+from main_app.models import Section, MaterialApprovalRequest, Material
+from .models import UserProfile, AuthorApprovalRequest
 from django.contrib.auth.models import User
 from .forms import UserForm, UserProfileForm, AuthorApprovalRequestForm
 
@@ -34,9 +34,59 @@ def register(request):
 def profile(request):
     context = {}
 
+    # Задаем начальные значения передаваемых переменных
+    is_firstname_exist = False
+    is_lastname_exist = False
+    is_author = False
+    is_staff = False
+    user_status = ''
+    user_status_text = ''
+    request_status = ''
+    is_request_exist = False
+    is_userdata_set = False
+    is_request_allowed = False
+
     # Получаем объекты пользователя и профиля
     user = request.user
     userprofile = user.userprofile
+    profile_name = user.username
+
+    # Проверяем, заполнены ли имя и фамилия
+    if user.first_name:
+        is_firstname_exist = True
+    if user.last_name:
+        is_lastname_exist = True
+
+    if user.first_name and user.last_name:
+        profile_name += ' ({0} {1})'.format(user.first_name, user.last_name)
+    elif user.first_name and not user.last_name:
+        profile_name += f' ({user.first_name})'
+
+    # Задаем статус и текст статуса пользователя
+    user_status = userprofile.status
+    if user_status in ('participant', 'approving'):
+        user_status_text = 'Участник'
+    else:
+        user_status_text = userprofile.get_status_display()
+        # if user_status == 'author':
+        #     is_author = True
+        if not is_author:
+            is_staff = True
+
+    # Проверяем, существует ли запрос на получение статуса автора
+    # Если да - задаем его
+    if AuthorApprovalRequest.objects.filter(author=user).exists():
+        is_request_exist = True
+        request_status = 'На проверке'
+
+    # Проверяем, полностью ли заполнен профиль
+    if user.first_name and user.last_name and user.email \
+        and userprofile.location and userprofile.birth_date:
+        is_userdata_set = True
+
+    # Проверяем, можно ли отправить запрос
+    if is_userdata_set and not is_request_exist:
+        is_request_allowed = True
 
     # Задаем стандартные значения для формы пользователя
     first_name = user.first_name
@@ -56,6 +106,9 @@ def profile(request):
         'birth_date': birth_date
     }
 
+    # Задаем список секций
+    section_list = Section.objects.all()
+
     # Если форма заполнена и отправлена - сохраняем ее
     # Если нет - открываем страницу профиля
     if request.method == 'POST':
@@ -74,18 +127,25 @@ def profile(request):
             update = userprofile_form.save(commit=False)
             update.user = user
             update.save()
+            return redirect('profile')
     else:
         # Задаем формы со стандартными значениями
         user_form = UserForm(initial=user_form_initial)
         userprofile_form = UserProfileForm(initial=userprofile_form_initial)
 
-    context['user_form'] = user_form
-    context['userprofile_form'] = userprofile_form
-
-    if user.userprofile.status == 'author':
-        context['material_approval_requests'] = \
-            models.MaterialApprovalRequest.objects.get(author=user)
-        context['materials'] = models.Material.objects.get(author=user)
+        # Заполняем контекстные данные
+        context['user_form'] = user_form
+        context['userprofile_form'] = userprofile_form
+        context['section_list'] = section_list
+        context['user_status'] = user_status
+        context['user_status_text'] = user_status_text
+        context['request_status'] = request_status
+        context['is_request_exist'] = is_request_exist
+        context['is_userdata_set'] = is_userdata_set
+        context['is_request_allowed'] = is_request_allowed
+        context['is_staff'] = is_staff
+        context['is_author'] = is_author
+        context['profile_name'] = profile_name
 
     return render(request, 'users/profile.html', context=context)
 
@@ -93,17 +153,25 @@ def profile(request):
 # Страница создания запроса на получения статуса автора
 def become_author(request):
     context = {}
+    # Задаем список секций
+    section_list = Section.objects.all()
     # Если форма правильно заполнена - сохраняем запрос и меняем статус юзера
-    # и направляем на страницу профиля.Иначе - перезагружаем страницу
+    # и направляем на страницу профиля. Иначе - перезагружаем страницу
     if request.method == 'POST':
         form = AuthorApprovalRequestForm(request.POST)
         if form.is_valid():
+            print('VALID')
             new_request = form.save(commit=False)
             new_request.author = request.user
             new_request.save()
             request.user.userprofile.status = 'approving'
             request.user.userprofile.save()
             return redirect('profile')
+        else:
+            print('NE VALID')
+            return redirect('become_author')
     else:
         context['form'] = AuthorApprovalRequestForm()
+        context['section_list'] = section_list
+
     return render(request, 'users/become_author.html', context=context)

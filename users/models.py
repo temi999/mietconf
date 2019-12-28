@@ -9,7 +9,7 @@ MAIN_SECTION_NAME = 'Нет секции'
 
 class UserProfile(models.Model):
     """ Расширяет базовую модель пользователя, при помощи связи 1 к 1
-    status, profile pic, birth date, location"""
+    status,  birth date, location"""
 
     class Meta:
         verbose_name = 'Профиль пользователя'
@@ -63,7 +63,7 @@ class AuthorApprovalRequest(models.Model):
 
     cover_letter = models.TextField(verbose_name='Сопроводительное письмо')
 
-    section = models.OneToOneField(Section,
+    section = models.ForeignKey(Section,
                                    verbose_name='Секция',
                                    on_delete=models.CASCADE)
 
