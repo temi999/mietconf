@@ -1,0 +1,38 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">{% endblock %}
+
+{% block title %}Заявки{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="user_info">
+        <div class="section">
+            <div class="authors">
+                <h2>Заявки на статус автора ({{ author_requests.count }})</h2>
+                {% for author_request in author_requests %}
+                <p><a href="{% url 'check_author_request'  pk=author_request.id%}">
+                    {{ author_request.author.username }}</a></p>
+                {% empty %}
+                <p>Новых заявок нет!</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="user_info">
+        <div class="section">
+           <div class="materials">
+               <h2>Новые материалы на проверку ({{ materials.count }})</h2>
+               {% for material in materials %}
+                   <p><a href="{% url 'check_material' pk=material.id %}">{{ material.title }}</a></p>
+                {% empty %}
+                   <p>Новых материалов нет!</p>
+               {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

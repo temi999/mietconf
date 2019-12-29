@@ -1,0 +1,19 @@
+{% extends 'base/form.html' %}
+
+{% block title %}Отправить материал{% endblock %}
+
+{% block form %}
+    <form method="POST" enctype="multipart/form-data" action="{% url 'send_material' %}">
+    {% csrf_token %}
+    <h2 class="title">Отправить материал</h2>
+    <p>Заголовок</p>
+    <p>{{ form.title }}</p>
+    <p>Описание</p>
+    <p>{{ form.description }}</p>
+    <p>Документ</p>
+    <p>{{ form.document }}</p>
+    <p>Презентация</p>
+    <p>{{ form.presentation }}</p>
+    <p><input type="submit" value="Отправить"></p>
+    </form>
+{% endblock %}

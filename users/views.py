@@ -1,18 +1,17 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-from main_app.models import Section, MaterialApprovalRequest, Material
+from main_app.models import Section, Material
 from .models import UserProfile, AuthorApprovalRequest
 from django.contrib.auth.models import User
 from .forms import UserForm, UserProfileForm, AuthorApprovalRequestForm
 
 
-# Страница регистрации
-def register(request):
-    # Если форма заполнена правильно - регистрируем пользователя,
-    # входим под ним и переходим на главную
+def register_view(request):
+    """ Страница регистрации, использует стандартную форму django (UserCreationForm)
+        TO DO: Доработать неправильное заполнение и если пользователь уже вошел """
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
 
@@ -26,41 +25,50 @@ def register(request):
     else:
         form = UserCreationForm()
 
-    return render(request, 'registration/register.html', {'form': form})
+    return render(request, 'forms/register.html', {'form': form})
 
+def login_view(request):
+    """ Страница входа, использует стандартную форму django (AuthenticationForm)
+        TO DO: Доработать неправильное заполнение """
+    if request.user.is_authenticated:
+        return redirect('profile')
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
 
-# Страница профиля, требуется аутентификация, иначе редирект на страницу логина
+        if form.is_valid():
+            user=form.get_user()
+            login(request, user)
+            return redirect('profile')
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'forms/login.html', {'form': form})
+
+def logout_view(request):
+    """ Перенаправляет на главную страницу после выхода из аккаунта """
+    logout(request)
+    return redirect('home')
+
 @login_required
 def profile(request):
+    """ Страница профиля
+
+        Передается форма для изменения данных профиля и необходимая информация
+        о пользователе: статус, статусы заявок, данные профиля
+
+        Требуется вход в аккаунт. Если вход не выполнен - перенаправляет на страницу входа
+
+        TO DO: для авторов дополнительно передавать список его материалов и заявок """
     context = {}
 
     # Задаем начальные значения передаваемых переменных
-    is_firstname_exist = False
-    is_lastname_exist = False
-    is_author = False
-    is_staff = False
-    user_status = ''
-    user_status_text = ''
-    request_status = ''
+    show_request = False
     is_request_exist = False
-    is_userdata_set = False
-    is_request_allowed = False
+    is_material_sent = False
 
     # Получаем объекты пользователя и профиля
     user = request.user
     userprofile = user.userprofile
-    profile_name = user.username
-
-    # Проверяем, заполнены ли имя и фамилия
-    if user.first_name:
-        is_firstname_exist = True
-    if user.last_name:
-        is_lastname_exist = True
-
-    if user.first_name and user.last_name:
-        profile_name += ' ({0} {1})'.format(user.first_name, user.last_name)
-    elif user.first_name and not user.last_name:
-        profile_name += f' ({user.first_name})'
 
     # Задаем статус и текст статуса пользователя
     user_status = userprofile.status
@@ -68,25 +76,17 @@ def profile(request):
         user_status_text = 'Участник'
     else:
         user_status_text = userprofile.get_status_display()
-        # if user_status == 'author':
-        #     is_author = True
-        if not is_author:
-            is_staff = True
+
+    # Показывать ли сакцию со статусом заявки
+    if not (userprofile.is_staff() or userprofile.is_author()):
+        show_request = True
 
     # Проверяем, существует ли запрос на получение статуса автора
     # Если да - задаем его
     if AuthorApprovalRequest.objects.filter(author=user).exists():
         is_request_exist = True
-        request_status = 'На проверке'
-
-    # Проверяем, полностью ли заполнен профиль
-    if user.first_name and user.last_name and user.email \
-        and userprofile.location and userprofile.birth_date:
-        is_userdata_set = True
-
-    # Проверяем, можно ли отправить запрос
-    if is_userdata_set and not is_request_exist:
-        is_request_allowed = True
+    if Material.objects.filter(author=user).exists():
+        is_material_sent = True
 
     # Задаем стандартные значения для формы пользователя
     first_name = user.first_name
@@ -137,21 +137,24 @@ def profile(request):
         context['user_form'] = user_form
         context['userprofile_form'] = userprofile_form
         context['section_list'] = section_list
-        context['user_status'] = user_status
         context['user_status_text'] = user_status_text
-        context['request_status'] = request_status
         context['is_request_exist'] = is_request_exist
-        context['is_userdata_set'] = is_userdata_set
-        context['is_request_allowed'] = is_request_allowed
-        context['is_staff'] = is_staff
-        context['is_author'] = is_author
-        context['profile_name'] = profile_name
+        context['show_request'] = show_request
+        context['is_material_sent'] = is_material_sent
+        if is_material_sent:
+            context['material_status'] = Material.objects.get(author=user).get_status_display()
 
-    return render(request, 'users/profile.html', context=context)
+    return render(request, 'pages/profile.html', context=context)
+
+def readonly_profile(request, pk):
+    profile = User.objects.get(pk=pk)
+    return render(request, 'pages/readonly_profile.html', {'profile': profile})
 
 
-# Страница создания запроса на получения статуса автора
 def become_author(request):
+    """ Форма для создания запроса на получение статуса автора """
+    if AuthorApprovalRequest.objects.filter(author=request.user).exists():
+        return redirect('profile') #TO DO: Направлять на страницу с ошибкой
     context = {}
     # Задаем список секций
     section_list = Section.objects.all()
@@ -160,7 +163,6 @@ def become_author(request):
     if request.method == 'POST':
         form = AuthorApprovalRequestForm(request.POST)
         if form.is_valid():
-            print('VALID')
             new_request = form.save(commit=False)
             new_request.author = request.user
             new_request.save()
@@ -168,10 +170,9 @@ def become_author(request):
             request.user.userprofile.save()
             return redirect('profile')
         else:
-            print('NE VALID')
             return redirect('become_author')
     else:
         context['form'] = AuthorApprovalRequestForm()
         context['section_list'] = section_list
 
-    return render(request, 'users/become_author.html', context=context)
+    return render(request, 'forms/become_author.html', context=context)

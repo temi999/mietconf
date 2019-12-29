@@ -1,5 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_delete, pre_save
+from django.dispatch import receiver
+
+
+def upload_path(instance, filename):
+    return '{0}/{1}/{2}/{3}'.format(instance.section.name,
+                                     instance.author.username,
+                                     instance.title,
+                                     filename)
 
 
 class Section(models.Model):
@@ -26,18 +35,34 @@ class Material(models.Model):
         verbose_name = 'Материал'
         verbose_name_plural = 'Материалы'
 
+    TECH = 'tech_sec'
+    SCI = 'sci_sec'
+    HEAD = 'head'
+    APPROVED = 'approved'
+
+    STATUS_CHOICES = (
+        (TECH, 'Проверка оформления'),
+        (SCI, 'Проверка тезисов'),
+        (HEAD, 'Ожидает подтверждения'),
+        (APPROVED, 'Материал подтвержден')
+    )
+
     title = models.CharField(verbose_name='Заголовок',
                              max_length=75)
 
     description = models.TextField(verbose_name='Описание')
 
-    content = models.TextField(verbose_name='Содержание')
+    document = models.FileField(upload_to=upload_path,
+                                verbose_name='Документ',
+                                null=True)
 
-    last_update = models.DateTimeField(verbose_name='Последнее обновление',
-                                       auto_now=True)
+    presentation = models.FileField(upload_to=upload_path,
+                                    verbose_name='Презентация',
+                                    null=True)
 
-    created_at = models.DateTimeField(verbose_name='Создан',
-                                      auto_now_add=True)
+    status = models.CharField(verbose_name='Статус',
+                              choices=STATUS_CHOICES,
+                              max_length=255)
 
     author = models.ForeignKey(User,
                                verbose_name='Автор',
@@ -47,33 +72,6 @@ class Material(models.Model):
                                 verbose_name='Секция',
                                 on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.title + ' - {0}'.format(self.section)
-
-
-class MaterialApprovalRequest(models.Model):
-    class Meta:
-        verbose_name = 'Запрос на публикацию'
-        verbose_name_plural = 'Запросы на публикацию'
-
-    TECH = 'tech_sec'
-    SCI = 'sci_sec'
-    HEAD = 'head'
-
-    ASSIGNED_TO_CHOICES = (
-        (TECH, 'Техническому секретарю (Ожидает проверки оформления)'),
-        (SCI, 'Учёному секретарю (Ожидает проверки на соответствие тематике)'),
-        (HEAD, 'Руководителю секции (Ожидает подтверждения от руководителя секции)'),
-    )
-
-    material = models.OneToOneField(Material,
-                                    verbose_name='Материал',
-                                    on_delete=models.CASCADE)
-
-    assigned_to = models.TextField(verbose_name='Назначен',
-                                   choices=ASSIGNED_TO_CHOICES,
-                                   max_length=255)
-
     last_update = models.DateTimeField(verbose_name='Последнее обновление',
                                        auto_now=True)
 
@@ -81,4 +79,22 @@ class MaterialApprovalRequest(models.Model):
                                       auto_now_add=True)
 
     def __str__(self):
-        return self.material
+        return self.title + ' - {0}'.format(self.section.name)
+
+    def consider(self, accept:bool):
+        if accept:
+            if self.status == self.TECH:
+                self.status = self.SCI
+            elif self.status == self.SCI:
+                self.status = self.HEAD
+            elif self.status == self.HEAD:
+                self.status = self.APPROVED
+            self.save()
+        else:
+            self.delete()
+
+@receiver(post_delete, sender=Material)
+def submission_delete(sender, instance, **kwargs):
+    """ При удалении материала удалить связанные с ним файлы """
+    instance.document.delete(False)
+    instance.presentation.delete(False)

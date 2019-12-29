@@ -30,8 +30,9 @@ a.become_author:hover{
 
 .container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    margin-left: 10px;
+    align-items: flex-start;
 }
 
 .user_info {
@@ -41,7 +42,9 @@ a.become_author:hover{
     border-radius: 20px;
     padding: 20px 60px;
     margin-top: 15px;
+    margin-right: 15px;
     color: #707070;
+    max-width: 700px;
 }
 
 .title {
@@ -87,4 +90,37 @@ input[type="submit"] {
     color: white;
     padding: 5px 20px;
     background-color: #707070;
+}
+
+p > a {
+    text-decoration: none;
+    border-style: none;
+    border-radius: 20px;
+    color: white;
+    padding: 5px 20px;
+    background-color: #707070;
+}
+
+.decision {
+    display: flex;
+    align-self: center;
+    margin-top: 50px;
+}
+.decision p {
+    margin-right: 10px;
+}
+
+.accept {
+    background-color: #008d3a;
+}
+
+.decline {
+    background-color: #ad282b;
+}
+
+.section > a {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    height: 30px;
 }

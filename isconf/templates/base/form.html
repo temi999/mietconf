@@ -4,8 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'form.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: {% static 'img/bg.jpg' %};
+        }
+    </style>
+    {% block css %}{% endblock %}
 </head>
 <body>
     <div class="container">

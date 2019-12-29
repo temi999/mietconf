@@ -3,10 +3,6 @@
     color: #4f4f4f;
 }
 
-body {
-    background-image: url("site-background.jpg");
-}
-
 .container {
     position: fixed;
     top: 50%;
@@ -37,12 +33,11 @@ body {
 }
 
 input:not([type="submit"]) {
-    border: 1px solid black;
+    border: 0.5px solid #555555;
     height: 20px;
     border-radius: 15px;
     background: none;
     text-align: center;
-    font-weight: bold;
 }
 
 input[type="submit"] {

@@ -15,13 +15,20 @@ class UserProfile(models.Model):
         verbose_name = 'Профиль пользователя'
         verbose_name_plural = 'Профили пользователей'
 
+    PART = 'participant'
+    AUTHOR = 'author'
+    APPROVING = 'approving'
+    TECH = 'tech_sec'
+    SCI = 'sci_sec'
+    HEAD = 'head'
+
     STATUS_CHOICES = (
-        ('participant', 'Участник'),
-        ('approving', 'Ожидает получения статуса автора'),
-        ('author', 'Автор'),
-        ('tech_sec', 'Технический секретарь'),
-        ('sci_sec', 'Учёный секретарь'),
-        ('head', 'Руководитель секции'),
+        (PART, 'Участник'),
+        (APPROVING, 'Ожидает получения статуса автора'),
+        (AUTHOR, 'Автор'),
+        (TECH, 'Технический секретарь'),
+        (SCI, 'Учёный секретарь'),
+        (HEAD, 'Руководитель секции'),
     )
 
     user = models.OneToOneField(User,
@@ -43,6 +50,24 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    def is_staff(self):
+        return self.status in ('tech_sec', 'sci_sec', 'head')
+
+    def is_author(self):
+        return self.status == 'author'
+
+    def profile_name(self):
+        addition = ''
+        if self.user.first_name and not self.user.last_name:
+            addition += f' ({self.user.first_name})'
+        elif self.user.first_name and self.user.last_name:
+            addition += f' ({self.user.first_name} {self.user.last_name})'
+        return self.user.username + addition
+
+    def is_profile_set(self):
+        return self.user.first_name and self.user.last_name and self.user.email\
+               and self.location and self.birth_date
 
 
 @receiver(post_save, sender=User)
@@ -69,3 +94,11 @@ class AuthorApprovalRequest(models.Model):
 
     def __str__(self):
         return self.author.username
+
+    def consider(self, accept:bool):
+        if accept:
+            self.author.userprofile.status = 'author'
+        else:
+            self.author.userprofile.status = 'participant'
+        self.author.userprofile.save()
+        self.delete()

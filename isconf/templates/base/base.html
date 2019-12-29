@@ -6,10 +6,10 @@
     <title>{% block title  %}Base{% endblock %}</title>
     <style>
         body {
-            background-image: url({% static 'site-background.jpg' %});
+            background-image: url({% static 'img/bg.jpg' %});
         }
     </style>
-    <link rel="stylesheet" href="{% static 'navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
     {% block css %}{% endblock %}
 </head>
@@ -23,22 +23,9 @@
         <ul>
             <li><a href="{% url 'home' %}">Главная</a></li>
             <li>
-                <a href="#">Статьи</a>
-                <ul>
-                    {% if section_list %}
-                        {% for section in section_list %}
-                            {% if section.name != 'Нет секции' %}
-                                <li><a href="">{{ section.name }}</a></li>
-                            {% else %}
-                                <li><a href="">Все секции</a></li>
-                            {% endif %}
-                        {% endfor %}
-                    {% endif %}
-
-                    {% if user.userprofile.status not in 'participant approving author' %}
-                        <li><a href="">Ожидают проверки</a></li>
-                    {% endif %}
-                </ul>
+                {% if user.userprofile.status not in 'participant approving author' %}
+                    <li><a href="{% url 'requests' %}">Заявки</a></li>
+                {% endif %}
             </li>
             <li>
                 <a href="#">Профиль</a>
