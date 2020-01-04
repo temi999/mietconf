@@ -1,10 +1,45 @@
 {% extends 'base/base.html' %}
+{% load static %}
 
-{%  block title %}Главная{% endblock %}
+{% block title %}MIET IT Conf 2020{% endblock %}
 
-{% block section_list %}
+{% block content %}
+    <div class="container">
+    <div class="row" style="margin-top: 20px">
+        <div class="col"></div>
+        <div class="col"><h3 style="text-align: center;">MIET IT Conf 2020</h3></div>
+        <div class="col"></div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <hr></div>
+    </div>
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col"><p style="text-align: center">Совсем скоро в стенах нашего университета пройдет IT-конференция. Участвовать может каждый желающий.
+            Также, вы можете предложить свою кандидатуру в качестве автора и получить возможность выступить со своим материалом или рассказать свою историю<br>
+            Конференция будет проходить по следующим секциям:</p></div>
+        <div class="col-2"></div>
+    </div>
+    <div class="row">
+        <div class="col"><img src="{% static 'img/big_data.png' %}" alt="" class="img-fluid"><p style="text-align: center; margin-top: 10px;"><a href="" class="btn btn-outline-dark">Big Data</a></p></div>
+        <div class="col"><img src="{% static 'img/big_data.png' %}" alt="" class="img-fluid"><p style="text-align: center; margin-top: 10px;"><a href="" class="btn btn-outline-dark">IT-тренды 2020</a></p></div>
+    </div>
+    <div class="row">
+        <div class="col"><img src="{% static 'img/big_data.png' %}" alt="" class="img-fluid"><p style="text-align: center; margin-top: 10px;"><a href="" class="btn btn-outline-dark">Базы данных</a></p></div>
+        <div class="col"><img src="{% static 'img/big_data.png' %}" alt="" class="img-fluid"><p style="text-align: center; margin-top: 10px;"><a href="" class="btn btn-outline-dark">Soft Skills</a></p></div>
+    </div>
+    <div class="row" style="margin-top: 20px;">
+        <div class="col"></div>
+        <div class="col">
+            <p style="text-align: center;">Зарегистрируйтесь, чтобы посмотреть все материалы или стать автором:</p>
+        </div>
+        <div class="col"></div>
+    </div>
+    <div class="row">
+        <div class="col"></div>
+        <div class="col d-flex justify-content-center" style="margin-top: 20px;"><p><a href="" class="btn btn-outline-dark">Зарегистрироваться</a></p></div>
+        <div class="col"></div>
+    </div>
+</div>
 {% endblock %}
-
-{%  block content %}
-    <p>Oh hi Mark</p>
-{%  endblock %}

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from . import models
 from .forms import SendMaterialForm
 from django.shortcuts import redirect, HttpResponse, Http404
-from .models import Material
+from .models import Material, Section
 from isconf import settings
 from mimetypes import guess_type
 from django.utils.http import urlquote
@@ -51,22 +51,6 @@ def download(request, path):
             return response
     raise Http404
 
-def check_author_request(request, pk):
-    if not request.user.userprofile.is_staff:
-        return redirect('home') # TO DO: Перенаправление на страницу с ошибкой
-    context = {}
-    author_request = AuthorApprovalRequest.objects.get(pk=pk)
-    context['author_request'] = author_request
-    return render(request, 'pages/check_request.html', context)
-
-def check_material(request, pk):
-    if not request.user.userprofile.is_staff:
-        return redirect('home') # TO DO: Перенаправление на страницу с ошибкой
-    context = {}
-    material = Material.objects.get(pk=pk)
-    context['material'] = material
-    return render(request, 'pages/check_request.html', context)
-
 def consider(request, pk, request_type:str, decision:str):
     if not request.user.userprofile.is_staff:
         return redirect('home') # TO DO: Перенаправление на страницу с ошибкой
@@ -84,4 +68,9 @@ def consider(request, pk, request_type:str, decision:str):
 
     return redirect('requests')
 
+def material_list(request):
+    sections = Section.objects.exclude(name="Нет секции")
+    materials = Material.objects.all()
+    return render(request, 'pages/materials.html', {'materials': materials,
+                                                    'sections': sections})
 

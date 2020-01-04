@@ -1,38 +1,93 @@
 {% extends 'base/base.html' %}
-{% load static %}
-{% block css %}
-    <link rel="stylesheet" href="{% static 'css/profile.css' %}">{% endblock %}
 
-{% block title %}Заявки{% endblock %}
+{% block title %}Активные заявки{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="user_info">
-        <div class="section">
-            <div class="authors">
-                <h2>Заявки на статус автора ({{ author_requests.count }})</h2>
-                {% for author_request in author_requests %}
-                <p><a href="{% url 'check_author_request'  pk=author_request.id%}">
-                    {{ author_request.author.username }}</a></p>
-                {% empty %}
-                <p>Новых заявок нет!</p>
+    <div class="container">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="materials-tab" data-toggle="tab" href="#materials" role="tab" aria-controls="profile" aria-selected="false">Материалы</a>
+            </li>
+            {% if user.userprofile.status == 'tech_sec' %}
+                <li class="nav-item">
+                    <a class="nav-link" id="authors-tab" data-toggle="tab" href="#author-requests" role="tab" aria-controls="home" aria-selected="true">Авторы</a>
+                </li>
+            {% endif %}
+
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade" id="author-requests" role="tabpanel" aria-labelledby="author-requests-tab">
+                <div class="row" style="margin-bottom: 30px; margin-top: 10px;">
+                    <div class="col" style="text-align: center">Имя</div>
+                    <div class="col" style="text-align: center">Фамилия</div>
+                    <div class="col" style="text-align: center">Город</div>
+                    <div class="col" style="text-align: center">Дата рождения</div>
+                    <div class="col" style="text-align: center">Email</div>
+                    <div class="col" style="text-align: center">Дата заявки</div>
+                    <div class="col" style="text-align: center">О себе</div>
+                </div>
+                {% for author in author_requests %}
+                    <div class="row d-flex align-items-center" style="margin-bottom: 20px;">
+                        <div class="col" style="text-align: center">{{ author.author.first_name }}</div>
+                        <div class="col" style="text-align: center">{{ author.author.last_name }}</div>
+                        <div class="col" style="text-align: center">{{ author.author.userprofile.location }}</div>
+                        <div class="col" style="text-align: center">{{ author.author.userprofile.birth_date }}</div>
+                        <div class="col" style="text-align: center">{{ author.author.email }}</div>
+                        <div class="col" style="text-align: center">{{ author.date_created }}</div>
+                        <div class="col" style="text-align: center"><a href="#author-id-{{ author.id }}" class="btn btn-sm btn-outline-secondary" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="author-id-{{ author.id }}">Открыть</a></div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="collapse" id="author-id-{{ author.id }}">
+                                <div class="card card-body">
+                                    <p>{{ author.cover_letter }}</p>
+                                    <p><a href="" class="btn btn-outline-dark active">Принять</a> <a href="" class="btn btn-outline-dark">Отклонить</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty%}
+                    <p>Нет активных заявок!</p>
                 {% endfor %}
             </div>
-        </div>
-    </div>
 
-    <div class="user_info">
-        <div class="section">
-           <div class="materials">
-               <h2>Новые материалы на проверку ({{ materials.count }})</h2>
-               {% for material in materials %}
-                   <p><a href="{% url 'check_material' pk=material.id %}">{{ material.title }}</a></p>
+            <div class="tab-pane fade show active" id="materials" role="tabpanel" aria-labelledby="materials-tab">
+                <div class="row" style="margin-top: 10px; margin-bottom: 30px;">
+                    <div class="col" style="text-align: center">Название статьи</div>
+                    <div class="col" style="text-align: center">Автор</div>
+                    <div class="col" style="text-align: center">Дата</div>
+                    <div class="col" style="text-align: center">Презентация</div>
+                    <div class="col" style="text-align: center">Документ</div>
+                    <div class="col-1" style="text-align: center">Описание</div>
+                </div>
+                {% for material in materials %}
+                    <div class="row d-flex align-items-center">
+                        <div class="col" style="text-align: center">{{ material.title }}</div>
+                        <div class="col" style="text-align: center">{{ material.author.first_name }} {{ material.author.last_name }}</div>
+                        <div class="col" style="text-align: center">{{ material.created_at }}</div>
+                        <div class="col" style="text-align: center">
+                            <a href="{% url 'download' path=material.presentation.path %}">Скачать</a>
+                        </div>
+                        <div class="col" style="text-align: center">
+                            <a href="{% url 'download' path=material.document.path %}">Скачать</a>
+                        </div>
+                        <div class="col-1" style="text-align: center"><a href="#material-id-{{ material.id }}" class="btn btn-sm btn-outline-secondary" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="material-id-{{ material.id }}">Открыть</a></div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="col">
+                            <div class="collapse" id="material-id-{{ material.id }}">
+                                <div class="card card-body">
+                                    <p>{{ material.description }}</p>
+                                    <p><a href="{% url 'consider' request_type='material' pk=material.id decision='accept'  %}" class="btn btn-outline-dark active">Принять</a>
+                                        <a href="{% url 'consider' request_type='material' pk=material.id decision='decline'  %}" class="btn btn-outline-dark">Отклонить</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
                 {% empty %}
-                   <p>Новых материалов нет!</p>
-               {% endfor %}
-            </div>
+                    <p>Нет новых материалов!</p>
+                {% endfor %}
         </div>
     </div>
-</div>
-
 {% endblock %}

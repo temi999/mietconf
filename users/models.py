@@ -66,8 +66,17 @@ class UserProfile(models.Model):
         return self.user.username + addition
 
     def is_profile_set(self):
-        return self.user.first_name and self.user.last_name and self.user.email\
+        return self.user.first_name and self.user.last_name and self.user.email \
                and self.location and self.birth_date
+
+    def is_request_allowed(self):
+        if AuthorApprovalRequest.objects.get(author=self.user):
+            return False
+
+        if not self.status == self.PART:
+            return False
+
+        return True
 
 
 @receiver(post_save, sender=User)
@@ -89,13 +98,15 @@ class AuthorApprovalRequest(models.Model):
     cover_letter = models.TextField(verbose_name='Сопроводительное письмо')
 
     section = models.ForeignKey(Section,
-                                   verbose_name='Секция',
-                                   on_delete=models.CASCADE)
+                                verbose_name='Секция',
+                                on_delete=models.CASCADE)
+
+    date_created = models.DateField(auto_now=True)
 
     def __str__(self):
         return self.author.username
 
-    def consider(self, accept:bool):
+    def consider(self, accept: bool):
         if accept:
             self.author.userprofile.status = 'author'
         else:

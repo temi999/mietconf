@@ -34,6 +34,7 @@ class Material(models.Model):
     class Meta:
         verbose_name = 'Материал'
         verbose_name_plural = 'Материалы'
+        ordering = ['created_at']
 
     TECH = 'tech_sec'
     SCI = 'sci_sec'

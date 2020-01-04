@@ -136,6 +136,7 @@ def profile(request):
         # Заполняем контекстные данные
         context['user_form'] = user_form
         context['userprofile_form'] = userprofile_form
+        context['author_form'] = AuthorApprovalRequestForm()
         context['section_list'] = section_list
         context['user_status_text'] = user_status_text
         context['is_request_exist'] = is_request_exist
@@ -146,20 +147,9 @@ def profile(request):
 
     return render(request, 'pages/profile.html', context=context)
 
-def readonly_profile(request, pk):
-    profile = User.objects.get(pk=pk)
-    return render(request, 'pages/readonly_profile.html', {'profile': profile})
-
-
 def become_author(request):
-    """ Форма для создания запроса на получение статуса автора """
-    if AuthorApprovalRequest.objects.filter(author=request.user).exists():
-        return redirect('profile') #TO DO: Направлять на страницу с ошибкой
-    context = {}
-    # Задаем список секций
-    section_list = Section.objects.all()
-    # Если форма правильно заполнена - сохраняем запрос и меняем статус юзера
-    # и направляем на страницу профиля. Иначе - перезагружаем страницу
+    if not request.user.userprofile.is_request_allowed():
+        return redirect('profile')
     if request.method == 'POST':
         form = AuthorApprovalRequestForm(request.POST)
         if form.is_valid():
@@ -168,11 +158,5 @@ def become_author(request):
             new_request.save()
             request.user.userprofile.status = 'approving'
             request.user.userprofile.save()
-            return redirect('profile')
-        else:
-            return redirect('become_author')
-    else:
-        context['form'] = AuthorApprovalRequestForm()
-        context['section_list'] = section_list
 
-    return render(request, 'forms/become_author.html', context=context)
+    return redirect('profile')

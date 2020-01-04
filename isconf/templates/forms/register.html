@@ -1,17 +1,40 @@
-{%  extends 'base/form.html' %}
+{%  extends 'base/base.html' %}
 
 {%  block title %}Регистрация{% endblock %}
 
-{% block form %}
-    <h2 class="title">Регистрация</h2>
+{% block content %}
+    <div class="container">
+    <div class="row m-30">
+        <div class="col"><h2 style="text-align: center;">Зарегистрироваться</h2></div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <hr>
+        </div>
+    </div>
     <form method="POST" action="{% url 'register' %}">
-        {%  csrf_token %}
-        <p>Имя пользователя</p>
-        <p>{{ form.username }}</p>
-        <p>Пароль</p>
-        <p>{{ form.password1 }}</p>
-        <p>Подтверждение</p>
-        <p>{{ form.password2 }}</p>
-        <p><input type="submit" value="Зарегистрироваться"></p>
+        {% csrf_token %}
+        <div class="row m-10">
+            <div class="col"></div>
+            <div class="col-2"><label for="login">Логин:</label></div>
+            <div class="col-4">{{ form.username }}</div>
+            <div class="col"></div>
+        </div>
+        <div class="row m-10">
+            <div class="col"></div>
+            <div class="col-2"><label for="password1">Пароль:</label></div>
+            <div class="col-4">{{ form.password1 }}</div>
+            <div class="col"></div>
+        </div>
+        <div class="row m-10">
+            <div class="col"></div>
+            <div class="col-2"><label for="password2">Пароль еще раз:</label></div>
+            <div class="col-4">{{ form.password2 }}</div>
+            <div class="col"></div>
+        </div>
+        <div class="row m-50">
+            <div class="col d-flex justify-content-center"><input class="btn btn-outline-dark" type="submit" value="Зарегистрироваться"></div>
+        </div>
     </form>
+</div>
 {% endblock %}
