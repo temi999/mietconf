@@ -1,1 +1,1 @@
-web: gunicorn mietconf.wsgi
+web: gunicorn isconf.wsgi
