@@ -1,19 +1,46 @@
-{% extends 'base/form.html' %}
+{% extends 'base/base.html' %}
 
 {% block title %}Отправить материал{% endblock %}
 
-{% block form %}
-    <form method="POST" enctype="multipart/form-data" action="{% url 'send_material' %}">
+{% block content %}
+<div class="container">
+    <div class="row m-30">
+        <div class="col"><h2 style="text-align: center;">Отправить материал</h2></div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <hr>
+        </div>
+    </div>
+    <form enctype="multipart/form-data" method="POST" action="{% url 'send_material' %}">
         {% csrf_token %}
-        <h2 class="title">Отправить материал</h2>
-        <p>Заголовок</p>
-        <p>{{ form.title }}</p>
-        <p>Описание</p>
-        <p>{{ form.description }}</p>
-        <p>Документ</p>
-        <p>{{ form.document }}</p>
-        <p>Презентация</p>
-        <p>{{ form.presentation }}</p>
-        <p><input type="submit" value="Отправить"></p>
+        <div class="row m-10">
+            <div class="col"></div>
+            <div class="col-2"><label for="title">Название:</label></div>
+            <div class="col-4">{{ form.title }}</div>
+            <div class="col"></div>
+        </div>
+        <div class="row m-10">
+            <div class="col"></div>
+            <div class="col-2"><label for="description">Описание:</label></div>
+            <div class="col-4">{{ form.description }}</div>
+            <div class="col"></div>
+        </div>
+        <div class="row m-10">
+            <div class="col"></div>
+            <div class="col-2"><label for="document">Документ:</label></div>
+            <div class="col-4">{{ form.document }}</div>
+            <div class="col"></div>
+        </div>
+        <div class="row m-10">
+            <div class="col"></div>
+            <div class="col-2"><label for="presentation">Презентация:</label></div>
+            <div class="col-4">{{ form.presentation }}</div>
+            <div class="col"></div>
+        </div>
+        <div class="row m-50">
+            <div class="col d-flex justify-content-center"><input class="btn btn-outline-dark" type="submit" value="Отправить материал"></div>
+        </div>
     </form>
+</div>
 {% endblock %}

@@ -73,6 +73,9 @@ class Material(models.Model):
                                 verbose_name='Секция',
                                 on_delete=models.CASCADE)
 
+    show_on_materials_page = models.BooleanField(verbose_name='Показывать на странице с материалами',
+                                                 default=False)
+
     last_update = models.DateTimeField(verbose_name='Последнее обновление',
                                        auto_now=True)
 
@@ -93,6 +96,9 @@ class Material(models.Model):
             self.save()
         else:
             self.delete()
+
+    def material_page_set(self):
+        return self.objects.filter(show_on_materials_page=True)
 
 @receiver(post_delete, sender=Material)
 def submission_delete(sender, instance, **kwargs):

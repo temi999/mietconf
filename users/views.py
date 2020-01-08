@@ -3,15 +3,17 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-from main_app.models import Section, Material
-from .models import UserProfile, AuthorApprovalRequest
+from main_app.models import Material
+from .models import UserProfile
 from django.contrib.auth.models import User
 from .forms import UserForm, UserProfileForm, AuthorApprovalRequestForm
 
 
 def register_view(request):
-    """ Страница регистрации, использует стандартную форму django (UserCreationForm)
-        TO DO: Доработать неправильное заполнение и если пользователь уже вошел """
+    """ Страница регистрации, использует стандартную форму django (UserCreationForm)"""
+    if request.user.is_authenticated:
+        return redirect('profile')
+
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
 
@@ -21,17 +23,17 @@ def register_view(request):
             password = form.cleaned_data['password1']
             user = authenticate(username=username, password=password)
             login(request, user)
-            return redirect('home')
+            return redirect('profile')
     else:
         form = UserCreationForm()
 
     return render(request, 'forms/register.html', {'form': form})
 
 def login_view(request):
-    """ Страница входа, использует стандартную форму django (AuthenticationForm)
-        TO DO: Доработать неправильное заполнение """
+    """ Страница входа, использует стандартную форму django (AuthenticationForm)"""
     if request.user.is_authenticated:
         return redirect('profile')
+
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
 
@@ -56,35 +58,15 @@ def profile(request):
         Передается форма для изменения данных профиля и необходимая информация
         о пользователе: статус, статусы заявок, данные профиля
 
-        Требуется вход в аккаунт. Если вход не выполнен - перенаправляет на страницу входа
-
-        TO DO: для авторов дополнительно передавать список его материалов и заявок """
+        Требуется вход в аккаунт. Если вход не выполнен - перенаправляет на страницу входа"""
     context = {}
 
-    # Задаем начальные значения передаваемых переменных
-    show_request = False
-    is_request_exist = False
     is_material_sent = False
 
     # Получаем объекты пользователя и профиля
     user = request.user
     userprofile = user.userprofile
 
-    # Задаем статус и текст статуса пользователя
-    user_status = userprofile.status
-    if user_status in ('participant', 'approving'):
-        user_status_text = 'Участник'
-    else:
-        user_status_text = userprofile.get_status_display()
-
-    # Показывать ли сакцию со статусом заявки
-    if not (userprofile.is_staff() or userprofile.is_author()):
-        show_request = True
-
-    # Проверяем, существует ли запрос на получение статуса автора
-    # Если да - задаем его
-    if AuthorApprovalRequest.objects.filter(author=user).exists():
-        is_request_exist = True
     if Material.objects.filter(author=user).exists():
         is_material_sent = True
 
@@ -105,9 +87,6 @@ def profile(request):
         'location': location,
         'birth_date': birth_date
     }
-
-    # Задаем список секций
-    section_list = Section.objects.all()
 
     # Если форма заполнена и отправлена - сохраняем ее
     # Если нет - открываем страницу профиля
@@ -137,11 +116,6 @@ def profile(request):
         context['user_form'] = user_form
         context['userprofile_form'] = userprofile_form
         context['author_form'] = AuthorApprovalRequestForm()
-        context['section_list'] = section_list
-        context['user_status_text'] = user_status_text
-        context['is_request_exist'] = is_request_exist
-        context['show_request'] = show_request
-        context['is_material_sent'] = is_material_sent
         if is_material_sent:
             context['material_status'] = Material.objects.get(author=user).get_status_display()
 
@@ -150,6 +124,7 @@ def profile(request):
 def become_author(request):
     if not request.user.userprofile.is_request_allowed():
         return redirect('profile')
+
     if request.method == 'POST':
         form = AuthorApprovalRequestForm(request.POST)
         if form.is_valid():

@@ -22,12 +22,12 @@
         <div class="col-2"></div>
     </div>
     <div class="row">
-        <div class="col"><img src="{% static 'img/big_data.png' %}" alt="" class="img-fluid"><p style="text-align: center; margin-top: 10px;"><a href="" class="btn btn-outline-dark">Big Data</a></p></div>
-        <div class="col"><img src="{% static 'img/big_data.png' %}" alt="" class="img-fluid"><p style="text-align: center; margin-top: 10px;"><a href="" class="btn btn-outline-dark">IT-тренды 2020</a></p></div>
+        <div class="col"><img src="{% static 'img/thumbnail.svg' %}" alt="" class="img-fluid"><p style="text-align: center; margin-top: 10px;"><a href="{% url 'material_list' %}" class="btn btn-outline-dark">Big Data</a></p></div>
+        <div class="col"><img src="{% static 'img/thumbnail.svg' %}" alt="" class="img-fluid"><p style="text-align: center; margin-top: 10px;"><a href="{% url 'material_list' %}" class="btn btn-outline-dark">IT-тренды 2020</a></p></div>
     </div>
     <div class="row">
-        <div class="col"><img src="{% static 'img/big_data.png' %}" alt="" class="img-fluid"><p style="text-align: center; margin-top: 10px;"><a href="" class="btn btn-outline-dark">Базы данных</a></p></div>
-        <div class="col"><img src="{% static 'img/big_data.png' %}" alt="" class="img-fluid"><p style="text-align: center; margin-top: 10px;"><a href="" class="btn btn-outline-dark">Soft Skills</a></p></div>
+        <div class="col"><img src="{% static 'img/thumbnail.svg' %}" alt="" class="img-fluid"><p style="text-align: center; margin-top: 10px;"><a href="{% url 'material_list' %}" class="btn btn-outline-dark">Базы данных</a></p></div>
+        <div class="col"><img src="{% static 'img/thumbnail.svg' %}" alt="" class="img-fluid"><p style="text-align: center; margin-top: 10px;"><a href="{% url 'material_list' %}" class="btn btn-outline-dark">Soft Skills</a></p></div>
     </div>
     <div class="row" style="margin-top: 20px;">
         <div class="col"></div>
@@ -38,7 +38,7 @@
     </div>
     <div class="row">
         <div class="col"></div>
-        <div class="col d-flex justify-content-center" style="margin-top: 20px;"><p><a href="" class="btn btn-outline-dark">Зарегистрироваться</a></p></div>
+        <div class="col d-flex justify-content-center" style="margin-top: 20px;"><p><a href="{% url 'register' %}" class="btn btn-outline-dark">Зарегистрироваться</a></p></div>
         <div class="col"></div>
     </div>
 </div>

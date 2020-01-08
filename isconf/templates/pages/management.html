@@ -1,0 +1,84 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Управление{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <form action="">
+            <div class="row m-10 d-flex align-items-center">
+                <div class="col-2"><input type="text" class="form-control" name="name_filter" placeholder="Фамилия\Имя" {% if name_filter %} value="{{ name_filter }} {% endif %}"></div>
+                <div class="col-2"><input type="text" class="form-control" name="login_filter" placeholder="Логин" {% if login_filter %}value="{{ login_filter }} {% endif %}"></div>
+                <div class="col-2"><input type="text" class="form-control" name="email_filter" placeholder="Email" {% if email_filter %} value="{{ email_filter }} {% endif %}"></div>
+                <div class="col-2">
+                    <select class="form-control" name="status_filter" id="status_filter">
+                        {% if status_filter and not status_filter == 'any'%}
+                            <option selected value="any">Все статусы</option>
+                            <option selected value="{{ status_filter.choice }}">{{ status_filter.display }}</option>
+                        {% elif not status_filter or status_filter == 'any'%}
+                            <option selected value="any">Все статусы</option>
+                        {% endif %}
+                        {% for status in statuses %}
+                            {% if status.choice != 'head' and status.choice != status_filter.choice %}
+                                <option value="{{ status.choice }}">{{ status.display }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-2">
+                    <select class="form-control" name="section_filter" id="section_filter">
+                        {% if section_filter and section_filter != 'any'%}
+                            <option selected value="any">Все секции</option>
+                            <option selected value="{{ section_filter }}">{{ section_filter }}</option>
+                        {% else %}
+                            <option selected value="any">Все секции</option>
+                        {% endif %}
+
+                        {% for section in sections %}
+                            {% if section.name != section_filter %}
+                                <option value="{{ section.name }}">{{ section.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-1"><input class="btn btn-sm btn-outline-dark" type="submit" value="Найти"></div>
+                <div class="col-1"><a class="btn btn-sm btn-outline-dark" href="{% url 'management' %}">Сбросить</a></div>
+            </div>
+        </form>
+        <hr \>
+        {% for person in persons %}
+            {% if person.status != user.userprofile.status %}
+                <form action="">
+                    <div class="row d-flex align-items-center mb-30">
+                        <div class="col-2">{{ person.user.last_name }} {{ person.user.first_name }}</div>
+                        <div class="col-2">{{ person.user.username }}</div>
+                        <div class="col-2">{{ person.user.email }}</div>
+                        <div class="col-2">
+                            <select class="form-control" name="new_status" id="new_status">
+                                <option selected value="{{ person.status }}">{{ person.get_status_display }}</option>
+                                {% for status in statuses %}
+                                    {% if status.choice != person.status %}
+                                        <option value="{{ status.choice }}">{{ status.display }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-2">
+                            <select class="form-control" name="new_section" id="new_section">
+                                <option selected value="{{ person.section.name }}">{{ person.section.name }}</option>
+                                {% for section in sections %}
+                                    {% if section.name != person.section.name %}
+                                        <option value="{{ section.name }}">{{ section.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <input type="hidden" name="person_id" id="{{ person.id }}" value="{{ person.id }}">
+                        <div class="col-1"><input class="btn btn-sm btn-outline-dark" type="submit" value="Сохранить"></div>
+                    </div>
+                </form>
+                <hr \>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+{% endblock %}

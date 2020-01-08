@@ -231,4 +231,8 @@ pip-selfcheck.json
 
 materials/*
 
+*.sqlite3
+
+.idea
+
 # End of https://www.gitignore.io/api/venv,python,pycharm,virtualenv,visualstudiocode

@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from main_app.models import Section
+from main_app.models import Section, Material
 
 MAIN_SECTION_NAME = 'Нет секции'
 
@@ -70,13 +70,24 @@ class UserProfile(models.Model):
                and self.location and self.birth_date
 
     def is_request_allowed(self):
-        if AuthorApprovalRequest.objects.get(author=self.user):
+        if AuthorApprovalRequest.objects.filter(author=self.user).exists():
             return False
 
         if not self.status == self.PART:
             return False
 
         return True
+
+    def can_send_material(self):
+        if Material.objects.filter(author=self.user).exists():
+            return False
+        return True
+
+    def change_status(self, new_status):
+        self.status = new_status
+        if AuthorApprovalRequest.objects.filter(author=self.user).exists():
+            AuthorApprovalRequest.objects.get(author=self.user).delete()
+        self.save()
 
 
 @receiver(post_save, sender=User)

@@ -3,84 +3,103 @@
 {% block title %} {{ user.username }} - Профиль{% endblock %}
 
 {% block content %}
-   <div class="container">
-    <div class="row m-30">
-        <div class="col"><h3 style="text-align: center;"><span style="margin-right: 20px;">{{ user.userprofile.profile_name }}</span><a href="#" class="btn btn-outline-dark disabled" aria-disabled="true">{{ user.userprofile.get_status_display }}</a></h3></div>
+    <div class="container">
+        <div class="row m-30">
+            <div class="col"><h3 style="text-align: center;"><span style="margin-right: 20px;">{{ user.userprofile.profile_name }}</span><a href="#" class="btn btn-outline-dark disabled" aria-disabled="true">{{ user.userprofile.get_status_display }}</a></h3></div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <hr>
+            </div>
+        </div>
+        <form method="POST" action="{% url 'profile' %}">
+            {% csrf_token %}
+            <div class="row m-10">
+                <div class="col"></div>
+                <div class="col-2"><label for="first_name">Имя:</label></div>
+                <div class="col-4">{{ user_form.first_name }}</div>
+                <div class="col"></div>
+            </div>
+            <div class="row m-10">
+                <div class="col"></div>
+                <div class="col-2"><label for="last_name">Фамилия:</label></div>
+                <div class="col-4">{{ user_form.last_name }}</div>
+                <div class="col"></div>
+            </div>
+            <div class="row m-10">
+                <div class="col"></div>
+                <div class="col-2"><label for="email">Email:</label></div>
+                <div class="col-4">{{user_form.email }}</div>
+                <div class="col"></div>
+            </div>
+            <div class="row m-10">
+                <div class="col"></div>
+                <div class="col-2"><label for="city">Город:</label></div>
+                <div class="col-4">{{ userprofile_form.location }}</div>
+                <div class="col"></div>
+            </div>
+            <div class="row m-10">
+                <div class="col"></div>
+                <div class="col-2"><label for="email">Дата рождения:</label></div>
+                <div class="col-4">{{ userprofile_form.birth_date }}</div>
+                <div class="col"></div>
+            </div>
+            <div class="row m-50">
+                <div class="col-5"></div>
+                <div class="col"><input type="submit" class="btn btn-outline-dark" value="Сохранить"></div>
+                <div class="col"></div>
+            </div>
+        </form>
+        {% if user.userprofile.is_request_allowed %}
+            <div class="row m-30">
+                <div class="col">
+                    <hr>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col"></div>
+                <div class="col"><h5 style="text-align: center;">Хотите стать автором?</h5></div>
+                <div class="col"></div>
+            </div>
+            <form method="POST" action="{% url 'become_author' %}" class="m-30">
+                {% csrf_token %}
+                <div class="row m-10">
+                    <div class="col"></div>
+                    <div class="col-2"><label for="section">Секция:</label></div>
+                    <div class="col-4">{{ author_form.section }}</div>
+                    <div class="col"></div>
+                </div>
+                <div class="row m-10">
+                    <div class="col"></div>
+                    <div class="col-2"><label for="about">Расскажите о себе:</label></div>
+                    <div class="col-4">{{ author_form.cover_letter }}</div>
+                    <div class="col"></div>
+                </div>
+                <div class="row m-30 mb-50">
+                    <div class="col-5"></div>
+                    <div class="col"><input type="submit" class="btn btn-outline-dark" value="Подать заявку"></div>
+                    <div class="col"></div>
+                </div>
+            </form>
+        {% endif %}
+        {% if user.userprofile.status == user.userprofile.AUTHOR and user.userprofile.can_send_material %}
+            <div class="row m-30"><div class="col"><hr></div></div>
+            <div class="row">
+                <div class="col"></div>
+                <div class="col"><h5 style="text-align: center;">Вы теперь автор, не забудьте прислать материал :)</h5></div>
+                <div class="col"></div>
+            </div>
+            <div class="row m-30">
+                <div class="col d-flex justify-content-center"><a href="{% url 'send_material' %}" class="btn btn-outline-dark">Отправить материал</a></div>
+            </div>
+        {% endif %}
+        {% if user.userprofile.status == user.userprofile.AUTHOR and not user.userprofile.can_send_material %}
+            <div class="row m-30"><div class="col"><hr></div></div>
+            <div class="row">
+                <div class="col"></div>
+                <div class="col"><h5 style="text-align: center;">Мы проверяем высланный Вами материал ({{ material_status }})</h5></div>
+                <div class="col"></div>
+            </div>
+        {% endif %}
     </div>
-    <div class="row">
-        <div class="col">
-            <hr>
-        </div>
-    </div>
-    <form method="POST" action="{% url 'profile' %}">
-        {% csrf_token %}
-        <div class="row m-10">
-            <div class="col"></div>
-            <div class="col-2"><label for="first_name">Имя:</label></div>
-            <div class="col-4">{{ user_form.first_name }}</div>
-            <div class="col"></div>
-        </div>
-        <div class="row m-10">
-            <div class="col"></div>
-            <div class="col-2"><label for="last_name">Фамилия:</label></div>
-            <div class="col-4">{{ user_form.last_name }}</div>
-            <div class="col"></div>
-        </div>
-        <div class="row m-10">
-            <div class="col"></div>
-            <div class="col-2"><label for="email">Email:</label></div>
-            <div class="col-4">{{user_form.email }}</div>
-            <div class="col"></div>
-        </div>
-        <div class="row m-10">
-            <div class="col"></div>
-            <div class="col-2"><label for="city">Город:</label></div>
-            <div class="col-4">{{ userprofile_form.location }}</div>
-            <div class="col"></div>
-        </div>
-        <div class="row m-10">
-            <div class="col"></div>
-            <div class="col-2"><label for="email">Дата рождения:</label></div>
-            <div class="col-4">{{ userprofile_form.birth_date }}</div>
-            <div class="col"></div>
-        </div>
-        <div class="row m-50">
-            <div class="col-5"></div>
-            <div class="col"><input type="submit" class="btn btn-outline-dark" value="Сохранить"></div>
-            <div class="col"></div>
-        </div>
-    </form>
-       {% if user.userprofile.is_request_allowed %}
-    <div class="row m-30">
-        <div class="col">
-            <hr>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col"></div>
-        <div class="col"><h5 style="text-align: center;">Хотите стать автором?</h5></div>
-        <div class="col"></div>
-    </div>
-    <form method="POST" action="{% url 'become_author' %}" class="m-30">
-        {% csrf_token %}
-        <div class="row m-10">
-            <div class="col"></div>
-            <div class="col-2"><label for="section">Секция:</label></div>
-            <div class="col-4">{{ author_form.section }}</div>
-            <div class="col"></div>
-        </div>
-        <div class="row m-10">
-            <div class="col"></div>
-            <div class="col-2"><label for="about">Расскажите о себе:</label></div>
-            <div class="col-4">{{ author_form.cover_letter }}</div>
-            <div class="col"></div>
-        </div>
-        <div class="row m-30 mb-50">
-            <div class="col-5"></div>
-            <div class="col"><input type="submit" class="btn btn-outline-dark" value="Подать заявку"></div>
-            <div class="col"></div>
-        </div>
-    </form>
-   {% endif %}
-</div>
 {% endblock %}

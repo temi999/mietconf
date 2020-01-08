@@ -1,117 +1,38 @@
 {% extends 'base/base.html' %}
+{% load custom_filter_tags %}
 
 {% block title %}Материалы конференции{% endblock %}
 
 {% block content %}
     <div class="container">
-    <div class="row m-30">
-    <div class="col"><h3 style="text-align: center;">Big Data</h3></div>
-</div>
-    <div class="row"><div class="col"><hr></div></div>
-    <div class="row">
-        <div class="col"><h6 style="text-align: center;">Название материала</h6></div>
+        {% for section in sections %}
+            <div class="row m-30">
+                <div class="col"><h3 style="text-align: center;">{{ section.name }}</h3></div>
+            </div>
+            <div class="row"><div class="col"><hr></div></div>
+            {% for material in section.material_set|show_on_materials %}
+                {% if material.show_on_materials_page %}
+                    <div class="row">
+                        <div class="col"><h6 style="text-align: center;">{{ material.title }}</h6></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3"></div>
+                        <div class="col" style="text-align: center;"><p>{{ material.description }}</p></div>
+                        <div class="col-3"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col"><p style="text-align: center;">{{ material.author.first_name }} {{ material.author.last_name }}</p></div>
+                    </div>
+                {% endif %}
+            {% empty %}
+                <div class="row">
+                    <div class="col"><p style="text-align: center;">Пока здесь нет материалов :)</p></div>
+                </div>
+            {% endfor %}
+        {% empty %}
+            <div class="row">
+                    <div class="col"><p style="text-align: center;">Скоро здесь появятся материалы</p></div>
+                </div>
+        {% endfor %}
     </div>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col" style="text-align: center;"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p></div>
-        <div class="col-3"></div>
-    </div>
-    <div class="row">
-        <div class="col"><p style="text-align: center;">Автор: Пупкин В. А.</p></div>
-    </div>
-    <div class="row m-30">
-        <div class="col"><h6 style="text-align: center;">Название материала</h6></div>
-    </div>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col"><p style="text-align: center;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p></div>
-        <div class="col-3"></div>
-    </div>
-    <div class="row">
-        <div class="col"><p style="text-align: center;">Автор: Пупкин В. А.</p></div>
-    </div>
-
-
-
-    <div class="row" style="margin-top: 20px;">
-        <div class="col"><h3 style="text-align: center;">Big Data</h3></div>
-    </div>
-    <div class="row"><div class="col"><hr></div></div>
-    <div class="row">
-        <div class="col"><h6 style="text-align: center;">Название материала</h6></div>
-    </div>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col" style="text-align: center;"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p></div>
-        <div class="col-3"></div>
-    </div>
-    <div class="row">
-        <div class="col"><p style="text-align: center;">Автор: Пупкин В. А.</p></div>
-    </div>
-    <div class="row" style="margin-top: 20px">
-        <div class="col"><h6 style="text-align: center;">Название материала</h6></div>
-    </div>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col" style="text-align: center;"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p></div>
-        <div class="col-3"></div>
-    </div>
-    <div class="row">
-        <div class="col"><p style="text-align: center;">Автор: Пупкин В. А.</p></div>
-    </div>
-
-    <div class="row" style="margin-top: 20px;">
-        <div class="col"><h3 style="text-align: center;">Big Data</h3></div>
-    </div>
-    <div class="row"><div class="col"><hr></div></div>
-    <div class="row">
-        <div class="col"><h6 style="text-align: center;">Название материала</h6></div>
-    </div>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col" style="text-align: center;"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p></div>
-        <div class="col-3"></div>
-    </div>
-    <div class="row">
-        <div class="col"><p style="text-align: center;">Автор: Пупкин В. А.</p></div>
-    </div>
-    <div class="row" style="margin-top: 20px">
-        <div class="col"><h6 style="text-align: center;">Название материала</h6></div>
-    </div>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col" style="text-align: center;"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p></div>
-        <div class="col-3"></div>
-    </div>
-    <div class="row">
-        <div class="col"><p style="text-align: center;">Автор: Пупкин В. А.</p></div>
-    </div>
-
-    <div class="row" style="margin-top: 20px;">
-        <div class="col"><h3 style="text-align: center;">Big Data</h3></div>
-    </div>
-    <div class="row"><div class="col"><hr></div></div>
-    <div class="row">
-        <div class="col"><h6 style="text-align: center;">Название материала</h6></div>
-    </div>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col" style="text-align: center;"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p></div>
-        <div class="col-3"></div>
-    </div>
-    <div class="row">
-        <div class="col"><p style="text-align: center;">Автор: Пупкин В. А.</p></div>
-    </div>
-    <div class="row" style="margin-top: 20px">
-        <div class="col"><h6 style="text-align: center;">Название материала</h6></div>
-    </div>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col" style="text-align: center;"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p></div>
-        <div class="col-3"></div>
-    </div>
-    <div class="row">
-        <div class="col"><p style="text-align: center;">Автор: Пупкин В. А.</p></div>
-    </div>
-</div>
 {% endblock %}

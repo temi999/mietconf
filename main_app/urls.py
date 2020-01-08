@@ -7,5 +7,6 @@ urlpatterns = [
     path('requests/', views.requests, name='requests'),
     path('download/<path:path>/', views.download, name='download'),
     path('requests/<str:request_type>/<int:pk>/<str:decision>/', views.consider, name='consider'),
-    path('materials/', views.material_list, name='material_list')
+    path('materials/', views.material_list, name='material_list'),
+    path('management/', views.management, name='management')
     ]
