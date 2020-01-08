@@ -28,7 +28,7 @@ SECRET_KEY = 'y4hub02y()1j!n!p6+4ll45bajnpv5hu@^3k$u*=oeqn25-41&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['mietconf.herokuapp.com']
 
 # AUTH_USER_MODEL = 'users.User'
 
