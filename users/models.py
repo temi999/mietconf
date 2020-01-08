@@ -93,8 +93,11 @@ class UserProfile(models.Model):
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        UserProfile.objects.create(user=instance, location='', birth_date=None,
-                                   status='participant', section=Section.objects.get(name=MAIN_SECTION_NAME))
+        try:
+            UserProfile.objects.create(user=instance, location='', birth_date=None,
+                                    status='participant', section=Section.objects.get(name=MAIN_SECTION_NAME))
+        finally:
+            pass
 
 
 class AuthorApprovalRequest(models.Model):
