@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from .forms import SendMaterialForm
 from django.shortcuts import redirect, HttpResponse, Http404
 from .models import Material, Section
@@ -36,7 +35,7 @@ def send_material(request):
 
 def requests(request):
     if not request.user.userprofile.is_staff():
-        return redirect('home') # TO DO: Перенаправление на страницу с ошибкой
+        return redirect('home')
     context = {}
     context['materials'] = Material.objects.filter(status=request.user.userprofile.status)
     context['author_requests'] = AuthorApprovalRequest.objects.all()
