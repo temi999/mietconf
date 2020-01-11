@@ -17,7 +17,7 @@ def home(request):
     return render(request, 'pages/home.html', {})
 
 def send_material(request):
-    if not request.user.userprofile.can_send_material():
+    if not request.user.userprofile.is_author():
         return redirect('home')
 
     if request.method == 'POST':
@@ -35,7 +35,7 @@ def send_material(request):
     return render(request, 'forms/send_material.html', {'form': form})
 
 def requests(request):
-    if not request.user.userprofile.is_staff:
+    if not request.user.userprofile.is_staff():
         return redirect('home') # TO DO: Перенаправление на страницу с ошибкой
     context = {}
     context['materials'] = Material.objects.filter(status=request.user.userprofile.status)

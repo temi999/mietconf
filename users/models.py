@@ -79,7 +79,7 @@ class UserProfile(models.Model):
         return True
 
     def can_send_material(self): # Пофиксить
-        if Material.objects.filter(author=self.user).exists():
+        if Material.objects.filter(author=self.user).exists() or self.is_staff():
             return False
         return True
 
