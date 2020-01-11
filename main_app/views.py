@@ -130,6 +130,7 @@ def management(request):
     if new_section:
         person = UserProfile.objects.get(pk=person_id)
         person.section = Section.objects.get(name=new_section)
+        person.save()
         return redirect('management')
 
     context = {
