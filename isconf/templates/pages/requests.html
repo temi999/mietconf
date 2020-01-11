@@ -41,7 +41,8 @@
                             <div class="collapse" id="author-id-{{ author.id }}">
                                 <div class="card card-body">
                                     <p>{{ author.cover_letter }}</p>
-                                    <p><a href="" class="btn btn-outline-dark active">Принять</a> <a href="" class="btn btn-outline-dark">Отклонить</a></p>
+                                    <p><a href="{% url 'consider' request_type='author' pk=material.id decision='accept'  %}" class="btn btn-outline-dark active">Принять</a>
+                                        <a href="{% url 'consider' request_type='author' pk=material.id decision='decline'  %}" class="btn btn-outline-dark">Отклонить</a></p>
                                 </div>
                             </div>
                         </div>
